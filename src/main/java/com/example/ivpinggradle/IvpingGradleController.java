@@ -30,7 +30,8 @@ public class IvpingGradleController {
 
     @FXML
     public CheckBox chkPingContinuous;
-
+    @FXML
+    public Button btnSsh;
 
     @FXML
     private void initialize() {
@@ -157,4 +158,32 @@ public class IvpingGradleController {
         alert.setContentText("Aplicativo para executar Testes de Ping em Hosts");
         alert.showAndWait();
     }
+
+    @FXML
+    private void onSshClicked() {
+        HostData selectedHost = tableView.getSelectionModel().getSelectedItem();
+
+        if (selectedHost == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aviso");
+            alert.setHeaderText(null);
+            alert.setContentText("Por favor, selecione um Host na tabela antes de abrir a conexão SSH.");
+            alert.showAndWait();
+            return;
+        }
+
+        String hostName = selectedHost.getHost();
+        String url = "https://s6006as3039.petrobras.biz/cgi-bin/ssh.sh?" + hostName;
+
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText(null);
+            alert.setContentText("Não foi possível abrir o navegador.\n" + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
 }
