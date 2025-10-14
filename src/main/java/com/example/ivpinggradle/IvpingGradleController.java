@@ -29,20 +29,20 @@ public class IvpingGradleController {
     private TableColumn<HostData, String> colLocation;
 
     @FXML
+    public CheckBox chkPingContinuous;
+
+
+    @FXML
     private void initialize() {
         setupTableColumns();
         loadExcelData();
         tableView.setItems(dataList);
 
-        // 🔹 Seleciona a primeira linha da tabela, se houver dados
         if (!dataList.isEmpty()) {
             tableView.getSelectionModel().selectFirst();
         }
     }
 
-    /**
-     * Método chamado quando o botão "Ping" é clicado.
-     */
     @FXML
     private void onPingClicked() {
         HostData selectedHost = tableView.getSelectionModel().getSelectedItem();
@@ -56,8 +56,10 @@ public class IvpingGradleController {
             return;
         }
 
-        // Executa o ping através da classe utilitária
-        PingUtils.runPing(selectedHost);
+        //PingUtils.runPing(selectedHost);
+
+        boolean continuous = chkPingContinuous.isSelected(); // <-- novo
+        PingUtils.runPing(selectedHost, continuous);
     }
 
     private void setupTableColumns() {
@@ -85,7 +87,7 @@ public class IvpingGradleController {
         } else {
             String userHome = System.getProperty("user.home");
             filePath = userHome + File.separator + "AppData" + File.separator + "Local" +
-                    File.separator + "Ivping_data" + File.separator + "data2_hosts.xlsx";
+                    File.separator + "Ivping_data" + File.separator + "data2_hosts.xlsx";// comparar com original no ChatGPT
         }
 
         File excelFile = new File(filePath);
@@ -96,7 +98,6 @@ public class IvpingGradleController {
 
         try (FileInputStream fis = new FileInputStream(excelFile);
              Workbook workbook = new XSSFWorkbook(fis)) {
-
             Sheet sheet = workbook.getSheetAt(0);
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -109,7 +110,6 @@ public class IvpingGradleController {
                     dataList.add(new HostData(hostName, ipAddress, deviceLocation));
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -137,13 +137,11 @@ public class IvpingGradleController {
 
     @FXML
     private void handleCloseApp() {
-        // Cria uma caixa de diálogo de confirmação
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar saída");
         alert.setHeaderText(null);
         alert.setContentText("Deseja realmente fechar o aplicativo?");
 
-        // Exibe o diálogo e espera a resposta do usuário
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 javafx.application.Platform.exit();
@@ -159,6 +157,4 @@ public class IvpingGradleController {
         alert.setContentText("Aplicativo para executar Testes de Ping em Hosts");
         alert.showAndWait();
     }
-
-
 }
