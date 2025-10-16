@@ -57,9 +57,7 @@ public class IvpingGradleController {
             return;
         }
 
-        //PingUtils.runPing(selectedHost);
-
-        boolean continuous = chkPingContinuous.isSelected(); // <-- novo
+        boolean continuous = chkPingContinuous.isSelected();
         PingUtils.runPing(selectedHost, continuous);
     }
 
@@ -159,31 +157,64 @@ public class IvpingGradleController {
         alert.showAndWait();
     }
 
-    @FXML
-    private void onSshClicked() {
-        HostData selectedHost = tableView.getSelectionModel().getSelectedItem();
+//    @FXML
+//    private void onSshClicked() {
+//        HostData selectedHost = tableView.getSelectionModel().getSelectedItem();
+//
+//        if (selectedHost == null) {
+//            Alert alert = new Alert(Alert.AlertType.WARNING);
+//            alert.setTitle("Aviso");
+//            alert.setHeaderText(null);
+//            alert.setContentText("Por favor, selecione um Host na tabela antes de abrir a conexão SSH.");
+//            alert.showAndWait();
+//            return;
+//        }
+//
+//        String hostName = selectedHost.getHost();
+//        String url = "https://s6006as3039.petrobras.biz/cgi-bin/ssh.sh?" + hostName;
+//
+//        try {
+//            java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+//        } catch (Exception e) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Erro");
+//            alert.setHeaderText(null);
+//            alert.setContentText("Não foi possível abrir o navegador.\n" + e.getMessage());
+//            alert.showAndWait();
+//        }
+//    }
+@FXML
+private void onSshClicked() {
+    HostData selectedHost = tableView.getSelectionModel().getSelectedItem();
 
-        if (selectedHost == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Aviso");
-            alert.setHeaderText(null);
-            alert.setContentText("Por favor, selecione um Host na tabela antes de abrir a conexão SSH.");
-            alert.showAndWait();
-            return;
-        }
-
-        String hostName = selectedHost.getHost();
-        String url = "https://s6006as3039.petrobras.biz/cgi-bin/ssh.sh?" + hostName;
-
-        try {
-            java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText(null);
-            alert.setContentText("Não foi possível abrir o navegador.\n" + e.getMessage());
-            alert.showAndWait();
-        }
+    if (selectedHost == null) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Aviso");
+        alert.setHeaderText(null);
+        alert.setContentText("Por favor, selecione um Host na tabela antes de abrir a conexão SSH.");
+        alert.showAndWait();
+        return;
     }
+
+    String hostName = selectedHost.getHost();
+
+    // Validação com expressão regular: somente Hosts que começam com SW ou RT
+    if (!hostName.matches("^(SW|RT).*")) {   // <-- novo
+        System.out.println("Apenas Switch e Roteador");
+        return;
+    }
+
+    String url = "https://s6006as3039.petrobras.biz/cgi-bin/ssh.sh?" + hostName;
+
+    try {
+        java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+    } catch (Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erro");
+        alert.setHeaderText(null);
+        alert.setContentText("Não foi possível abrir o navegador.\n" + e.getMessage());
+        alert.showAndWait();
+    }
+}
 
 }
